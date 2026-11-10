@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Consulta de CEP - Loja Aurora</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f2f2f2;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .container {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      max-width: 400px;
+      margin: auto;
+    }
+
+    input, button {
+      padding: 12px;
+      margin: 8px;
+    }
+
+    button {
+      background: #3478db;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Loja Aurora</h1>
+    <h3>Consulta de CEP</h3>
+
+    <input id="cep" placeholder="Digite seu CEP">
+    <button onclick="buscarCEP()">Consultar</button>
+
+    <p id="resultado"></p>
+  </div>
+
+  <script>
+    async function buscarCEP() {
+      const cep = document.getElementById("cep").value;
+      const resultado = document.getElementById("resultado");
+
+      if (!/^\d{8}$/.test(cep)) {
+        resultado.innerText = "Digite um CEP válido!";
+        return;
+      }
+
+      resultado.innerText = "Consultando...";
+
+      try {
+        const resposta = await fetch(
+          `https://viacep.com.br/ws/${cep}/json/`
+        );
+
+        const dados = await resposta.json();
+
+        if (dados.erro) {
+          resultado.innerText = "CEP não encontrado!";
+          return;
+        }
+
+        resultado.innerHTML = `
+          Rua: ${dados.logradouro}<br>
+          Bairro: ${dados.bairro}<br>
+          Cidade: ${dados.localidade}<br>
+          UF: ${dados.uf}
+        `;
+      } catch {
+        resultado.innerText = "Erro ao consultar o CEP.";
+      }
+    }
+  </script>
+</body>
+</html>
